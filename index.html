@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>MMP WS16/17 Aufgabe 3 - Differenzbild/Schnittbild</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <!-- Javascript image processing -->
+    <script type="text/javascript" src="script/processor.js"></script>
+
+  <body>
+    <h1>MMP WS16/17 Aufgabe 3 - Differenzbild/Schnittbild</h1>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Video</h2>
+                <video id="video" muted="true" autobuffer="true" controls="true" tabindex="0" onloadedmetadata="processor.doLoad()">
+        			<!-- webm file for firefox, chrome -->
+        			<!-- <source src="assets/v2b.webm" type="video/webm" /> -->
+        			<source src="assets/TV-100s-2110.podm.h264.webm" type="video/webm" />
+        			<!-- mp4 file for safari, IE -->
+        			<!-- <source src="assets/v2b.mp4" type="video/mp4" /> -->
+        			<source src="assets/TV-100s-2110.podm.h264.mp4" type="video/mp4" />
+			        <!-- Alternate content: just print a message, no video available -->
+			        No HTML5-Video support? Try a newer browser! (Opera11, IE9, Firefox4, Safari5)
+                </video>
+            </div>
+            <div class="col-md-6">
+                <canvas id="c1"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="container-fluid">
+                    <h3>Schnitte</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <canvas id="c2"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <button class="btn btn-default navbar-btn">Start Webcam</button>
+        </div>
+    </nav>
+
+  </body>
+
+</html>
