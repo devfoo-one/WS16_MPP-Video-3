@@ -18,13 +18,13 @@ var processor = {
     // if x or y is outside the image, it returns [0,0,0]
     getPixelRGB: function(frame, x, y) {
         if (x < 0 || x > frame.width || y < 0 || y > frame.height) {
-            return [0,0,0];
+            return [0, 0, 0];
         }
         i = y * frame.width + x;
         var r = frame.data[i * 4 + 0];
         var g = frame.data[i * 4 + 1];
         var b = frame.data[i * 4 + 2];
-        return [r,g,b];
+        return [r, g, b];
     },
 
     // applies weights to values and returns a sum scalar
@@ -41,72 +41,81 @@ var processor = {
     // do the image processing for one frame
     // reads frame data from rgb picture ctx
     // writes chroma key pictures to ctx1..3
-    computeFrame: function () {
+    computeFrame: function() {
 
-        // get the context of the canvas 1
-        var ctx = this.ctx1;
+        videoTime = this.video.currentTime;
 
-        // draw current video frame to ctx
-        ctx.drawImage(this.video, 0, 0, this.width - 1, this.height);
-
-        // get frame RGB data bytes from context ctx
-        var frame = {};
-        var frame_diff = {};
-        var length = 0;
-        try {
-            frame = ctx.getImageData(0, 0, this.width, this.height);
-            frame_diff = ctx.getImageData(0, 0, this.width, this.height);
-            length = (frame.data.length) / 4;
-        } catch (e) {
-            // catch and display error of getImageData fails
-            this.browserError(e);
-        }
-
-        // do the image processing
-
-        delta = 0;
-
-        if(this.lastFrame !== null) {
-            for (var i = 0; i < length; i++) {
-                var x = i % frame.width;
-                var y = Math.floor(i / frame.width);
-                var now = this.getPixelRGB(frame, x, y)
-                var r_now = now[0];
-                var g_now = now[1];
-                var b_now = now[2];
-                var last = this.getPixelRGB(this.lastFrame, x, y);
-                var r_last = last[0];
-                var g_last = last[1];
-                var b_last = last[2];
-                // var Y_now = 0.3 * r_now + 0.59 * g_now + 0.11 * b_now;
-                // var Y_last = 0.3 * r_last + 0.59 * g_last + 0.11 * b_last;
-
-                R_diff = ( (r_now - r_last) / 2) + 127.5;
-                G_diff = ( (g_now - g_last) / 2) + 127.5;
-                B_diff = ( (b_now - b_last) / 2) + 127.5;
-                frame_diff.data[i*4+0] = R_diff;
-                frame_diff.data[i*4+1] = G_diff;
-                frame_diff.data[i*4+2] = B_diff;
-                delta += Math.abs(R_diff) + Math.abs(G_diff) + Math.abs(B_diff);
+        if (videoTime != this.lastVideoTime) {  // don´t compute if the video is stopped
+            // get the context of the canvas 1
+            var ctx = this.ctx1;
+            // draw current video frame to ctx
+            ctx.drawImage(this.video, 0, 0, this.width - 1, this.height);
+            // get frame RGB data bytes from context ctx
+            var frame = {};
+            var frame_diff = {};
+            var length = 0;
+            try {
+                frame = ctx.getImageData(0, 0, this.width, this.height);
+                frame_diff = ctx.getImageData(0, 0, this.width, this.height);
+                length = (frame.data.length) / 4;
+            } catch (e) {
+                // catch and display error of getImageData fails
+                this.browserError(e);
             }
+            // do the image processing
+            frame_delta = 0;
+            if (this.lastFrame !== null) {
+                for (var i = 0; i < length; i++) {
+                    var x = i % frame.width;
+                    var y = Math.floor(i / frame.width);
+                    var now = this.getPixelRGB(frame, x, y);
+                    var r_now = now[0];
+                    var g_now = now[1];
+                    var b_now = now[2];
+                    var last = this.getPixelRGB(this.lastFrame, x, y);
+                    var r_last = last[0];
+                    var g_last = last[1];
+                    var b_last = last[2];
+                    // var Y_now = 0.3 * r_now + 0.59 * g_now + 0.11 * b_now;
+                    // var Y_last = 0.3 * r_last + 0.59 * g_last + 0.11 * b_last;
+
+                    R_diff = ((r_now - r_last) / 2) + 127.5;
+                    G_diff = ((g_now - g_last) / 2) + 127.5;
+                    B_diff = ((b_now - b_last) / 2) + 127.5;
+                    frame_diff.data[i * 4 + 0] = R_diff;
+                    frame_diff.data[i * 4 + 1] = G_diff;
+                    frame_diff.data[i * 4 + 2] = B_diff;
+                    frame_delta += Math.abs(r_now - r_last) + Math.abs(g_now - g_last) + Math.abs(b_now - b_last);
+                }
+            }
+            // calculate average delta for last 20 frames
+            sum = 0;
+            for (var j = 0; j < this.lastFrameChanges.length; j++) {
+                sum += this.lastFrameChanges[j];
+            }
+            avg_delta = sum / this.lastFrameChanges.length;
+            if ((frame_delta / avg_delta) > 4) {
+                this.print("Cut detected at second " + videoTime);
+            }
+
+            // write back to 3 canvas objects
+            this.ctx1.putImageData(frame, 0, 0);
+            this.ctx2.putImageData(frame_diff, 0, 0);
+            this.lastFrame = frame;
+            this.lastFrameChanges.push(frame_delta);
+            this.lastVideoTime = videoTime;
+            return;
         }
 
-        sum = 0  // TODO SCHWACHSINNIGES KALKULAT!
-        for(var j = 0; j < this.lastFrameChanges.length; j++) {
-            sum += this.lastFrameChanges[j];
-        }
-        avg_delta = sum / this.lastFrameChanges.length;
-        console.log(delta - avg_delta);
-
-        // write back to 3 canvas objects
-        this.ctx1.putImageData(frame, 0, 0);
-        this.ctx2.putImageData(frame_diff, 0, 0);
-        this.lastFrame = frame;
-        this.lastFrameChanges.push(delta);
-        return;
     },
 
-    timerCallback: function () {
+    print: function(text) {
+        var out = $("#output");
+        var old_text = out.val();
+        var new_text = text + '\r\n' + old_text;
+        out.val(new_text);
+    },
+    timerCallback: function() {
         if (this.error) {
             alert("Error happened - processor stopped.");
             return;
@@ -119,14 +128,14 @@ var processor = {
         // (40 ms = 1/25 s)
         var timeoutMilliseconds = 40;
         var self = this;
-        setTimeout(function () {
+        setTimeout(function() {
             self.timerCallback();
         }, timeoutMilliseconds);
     },
 
 
     // doLoad: needs to be called on load
-    doLoad: function () {
+    doLoad: function() {
 
         this.error = 0;
 
@@ -179,21 +188,23 @@ var processor = {
         // start the timer callback to draw frames
         this.timerCallback();
 
-        this.graphCtx = document.getElementById("graph").getContext("2d");
+        this.graphCtx = document.getElementById("graph")
+            .getContext("2d");
         this.ctx1.width = w;
         this.ctx1.height = h;
+        this.output = $("#output");
     },
 
     // helper function: isCanvasSupported()
     // check if HTML5 canvas is available
-    isCanvasSupported: function () {
+    isCanvasSupported: function() {
         var elem = document.createElement('canvas');
         return !!(elem.getContext && elem.getContext('2d'));
     },
 
     // log(text)
     // display text in log area or console
-    log: function (text) {
+    log: function(text) {
         var logArea = document.getElementById("log");
         if (logArea) {
             logArea.innerHTML += text + "<br>";
@@ -205,7 +216,7 @@ var processor = {
 
     // helper function: browserError()
     // displays an error message for incorrect browser settings
-    browserError: function (e) {
+    browserError: function(e) {
 
         this.error = 1;
 
@@ -219,7 +230,7 @@ var processor = {
     },
 
     //helper function to check for browser compatibility
-    browserCheck: function () {
+    browserCheck: function() {
         if (!this.isCanvasSupported()) {
             alert("No HTML5 canvas - use a newer browser please.");
             return false;
