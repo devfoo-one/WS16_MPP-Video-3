@@ -32,15 +32,16 @@
                 <video id="video" muted="true" autobuffer="true" controls="true" tabindex="0" onloadedmetadata="processor.doLoad()">
         			<!-- webm file for firefox, chrome -->
         			<!-- <source src="assets/v2b.webm" type="video/webm" /> -->
-        			<source src="assets/TV-100s-2110.podm.h264.webm" type="video/webm" />
+        			<source id="video_webm" src="assets/TV-100s-2110.podm.h264.webm" type="video/webm" />
         			<!-- mp4 file for safari, IE -->
         			<!-- <source src="assets/v2b.mp4" type="video/mp4" /> -->
-        			<source src="assets/TV-100s-2110.podm.h264.mp4" type="video/mp4" />
+        			<source id="video_mp4" src="assets/TV-100s-2110.podm.h264.mp4" type="video/mp4" />
 			        <!-- Alternate content: just print a message, no video available -->
 			        No HTML5-Video support? Try a newer browser! (Opera11, IE9, Firefox4, Safari5)
                 </video>
             </div>
             <div class="col-md-6">
+                <h3>Video</h3>
                 <canvas id="c1"></canvas>
             </div>
         </div>
@@ -52,6 +53,7 @@
                 </div>
             </div>
             <div class="col-md-3">
+                <h3>Differenzbild</h3>
                 <canvas id="c2"></canvas>
             </div>
         </div>
@@ -59,7 +61,9 @@
 
     <nav class="navbar navbar-default navbar-fixed-bottom">
         <div class="container">
-            <button class="btn btn-default navbar-btn">Start Webcam</button>
+            <button id="src_webcam" class="btn btn-default navbar-btn">Webcam</button>
+            <button id="src_vid1" class="btn btn-default navbar-btn">Video 1</button>
+            <button id="src_vid2" class="btn btn-default navbar-btn">Video 2</button>
         </div>
     </nav>
 

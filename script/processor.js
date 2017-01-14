@@ -11,8 +11,6 @@ var isChrome = /Chrome/.test(navigator.userAgent);
 
 var processor = {
 
-    lastFrame: null,
-    lastFrameChanges: [],
 
     // Returns an [r,g,b] array for a given coordinate out of a frame
     // if x or y is outside the image, it returns [0,0,0]
@@ -45,7 +43,7 @@ var processor = {
 
         videoTime = this.video.currentTime;
 
-        if (videoTime != this.lastVideoTime) {  // don´t compute if the video is stopped
+        if (videoTime != this.lastVideoTime) { // don´t compute if the video is stopped
             // get the context of the canvas 1
             var ctx = this.ctx1;
             // draw current video frame to ctx
@@ -115,6 +113,10 @@ var processor = {
         var new_text = text + '\r\n' + old_text;
         out.val(new_text);
     },
+    clearConsole: function() {
+        var out = $("#output").val("");
+    },
+
     timerCallback: function() {
         if (this.error) {
             alert("Error happened - processor stopped.");
@@ -136,8 +138,11 @@ var processor = {
 
     // doLoad: needs to be called on load
     doLoad: function() {
-
         this.error = 0;
+        this.lastFrame = null;
+        this.lastFrameChanges = [];
+        this.clearConsole();
+
 
         // check for a compatible browser
         if (!this.browserChecked)
@@ -162,7 +167,7 @@ var processor = {
             this.video.height = this.video.videoWidth / 2;
 
             // scaling factor for resulting canvas
-            var factor = 1;
+            var factor = 2;
             // var factor = 2;
             w = this.video.videoWidth / factor;
             h = this.video.videoHeight / factor;
@@ -190,7 +195,43 @@ var processor = {
 
         this.ctx1.width = w;
         this.ctx1.height = h;
-        this.output = $("#output");
+
+        $("#src_webcam")
+            .click(function() {
+                navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+                if (!navigator.getUserMedia) {
+                    alert("No getUserMedia / camera support with your browser");
+                    return false;
+                }
+                navigator.getUserMedia({
+                        video: true,
+                        audio: true
+                    },
+                    function(localMediaStream) {
+                        var video = document.querySelector('video');
+                        video.src = window.URL.createObjectURL(localMediaStream);
+                        video.load();
+                        video.play();
+                    },
+                    function(e) {
+                        console.log('cam fails!', e);
+                    }
+                );
+            });
+        $("#src_vid1")
+            .click(function() {
+                $("#video").removeAttr('src');
+                $("#video_webm").attr('src', 'assets/TV-100s-2110.podm.h264.webm');
+                $("#video_mp4").attr('src', 'assets/TV-100s-2110.podm.h264.mp4');
+                video.load();
+            });
+        $("#src_vid2")
+            .click(function() {
+                $("#video").removeAttr('src');
+                $("#video_webm").attr('src', 'assets/blue_screen.webm');
+                $("#video_mp4").attr('src', 'assets/blue_screen.mp4');
+                video.load();
+            });
     },
 
     // helper function: isCanvasSupported()
