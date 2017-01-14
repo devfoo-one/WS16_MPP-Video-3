@@ -188,8 +188,6 @@ var processor = {
         // start the timer callback to draw frames
         this.timerCallback();
 
-        this.graphCtx = document.getElementById("graph")
-            .getContext("2d");
         this.ctx1.width = w;
         this.ctx1.height = h;
         this.output = $("#output");
