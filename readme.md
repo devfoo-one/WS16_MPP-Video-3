@@ -3,6 +3,8 @@
 - Robin Mehlitz (857946)
 - Tom Oberhauser (859851)
 
+[Website](http://public.beuth-hochschule.de/~s67655/mmp_video/ue3/)
+
 ## Implementierung
 
 ### 1. Differenzbild
