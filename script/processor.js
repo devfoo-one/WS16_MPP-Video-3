@@ -1,5 +1,8 @@
-// MMP Video Uebung 02 - Filter, basierend auf:
+// MMP Video Uebung 03 - Differenz/Schnittbilderkennung
+// Robin Mehlitz (857946), Tom Oberhauser (859851)
 
+
+// Basierend auf:
 //HTML5 Example: Chroma Key Filter
 //(c) 2011-13
 // Jürgen Lohr, lohr@beuth-hochschule.de
@@ -74,9 +77,6 @@ var processor = {
                     var r_last = last[0];
                     var g_last = last[1];
                     var b_last = last[2];
-                    // var Y_now = 0.3 * r_now + 0.59 * g_now + 0.11 * b_now;
-                    // var Y_last = 0.3 * r_last + 0.59 * g_last + 0.11 * b_last;
-
                     R_diff = ((r_now - r_last) / 2) + 127.5;
                     G_diff = ((g_now - g_last) / 2) + 127.5;
                     B_diff = ((b_now - b_last) / 2) + 127.5;
@@ -86,7 +86,7 @@ var processor = {
                     frame_delta += Math.abs(r_now - r_last) + Math.abs(g_now - g_last) + Math.abs(b_now - b_last);
                 }
             }
-            // calculate average delta for last 20 frames
+            // calculate average delta for all frames
             sum = 0;
             for (var j = 0; j < this.lastFrameChanges.length; j++) {
                 sum += this.lastFrameChanges[j];
