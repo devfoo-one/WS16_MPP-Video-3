@@ -48,7 +48,7 @@ if (this.lastFrame !== null) {
 ### 2. Szenenerkennung
 
 Für die Szenenerkennung werden pro Frame die Unterschiede für jeden Pixel ermittelt.
-(Hier auf allen Kanälen, es sollte jedoch auch ein Kanal ausreichen.)
+(Hier auf allen Kanälen, es sollte jedoch auch ein Kanal ausreichen).
 
 ```javascript
 frame_delta += Math.abs(r_now - r_last) + Math.abs(g_now - g_last) + Math.abs(b_now - b_last);
@@ -68,7 +68,7 @@ if ((frame_delta / avg_delta) > 4) {
 }
 ```
 
-Die `frame_delta` Werte aller Frames werden gespeichert um daraus einen Durchschnitt ermitteln zu können.
+Die `frame_delta` Werte aller Frames werden gespeichert, um daraus einen Durchschnitt ermitteln zu können.
 Sofern der aktuelle Frame um mehr als den Faktor 4 vom Durchschnitt aller Frame-Veränderungen abweicht, wird der Frame als Schnittbild klassifiziert.
 
 Der Faktor 4 wurde durch Versuch an 2 Videos ermittelt.
